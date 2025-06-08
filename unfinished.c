@@ -36,8 +36,7 @@ int get_stack_size(t_stack *stack);
 int get_node_position_by_value(t_stack *stack, int value_to_find);
 
 // Operations (printf calls are the output)
-void do_sa(t_stack **stack_a);
-void do_sb(t_stack **stack_b);
+void do_sx(t_stack **stack_x);
 void do_ss(t_stack **stack_a, t_stack **stack_b);
 void do_pa(t_stack **stack_a, t_stack **stack_b);
 void do_pb(t_stack **stack_a, t_stack **stack_b);
@@ -57,47 +56,56 @@ void push_swap_sort_core(t_stack **stack_a, t_stack **stack_b, int num_count);
 
 
 // --- Main Program ---
-int main(int argc, char *argv[]) {
+int main(int argc, char *argv[])
+{
 	// --- 1. Argument Parsing and Preprocessing ---
-	if (argc <= 1) return 0;
+	if (argc <= 1)
+		return (0);
 
 	int num_count = argc - 1;
 	int *original_values = (int *)malloc(num_count * sizeof(int));
 	int *sorted_values = (int *)malloc(num_count * sizeof(int));
 	int *final_ranks = (int *)malloc(num_count * sizeof(int));
 
-	if (!original_values || !sorted_values || !final_ranks) {
-		fprintf(stderr, "Error\n");
-		free(original_values); free(sorted_values); free(final_ranks);
-		return 1;
+	if (!original_values || !sorted_values || !final_ranks)
+	{
+		(free(original_values), fprintf(stderr, "Error\n"));
+		return (free(final_ranks), free(sorted_values), 1);
 	}
 
-	for (int i = 0; i < num_count; i++) {
+	for (int i = 0; i < num_count; i++)
+	{
 		char *current_arg = argv[i + 1];
 		long val = ft_atol(current_arg);
 		int is_valid_format = 1;
-		if(current_arg == NULL || strlen(current_arg) == 0) is_valid_format = 0;
-		else {
-			for(size_t k=0; k < strlen(current_arg); ++k) {
-				if (!((current_arg[k] >= '0' && current_arg[k] <= '9') ||
-					  (k == 0 && (current_arg[k] == '-' || current_arg[k] == '+')))) {
-					is_valid_format = 0; break;
-				}
+		if (current_arg == NULL || strlen(current_arg) == 0)
+			is_valid_format = 0;
+		else
+		{
+			for (size_t k = 0; k < strlen(current_arg); ++k)
+			{
+				if (!((current_arg[k] >= '0' && current_arg[k] <= '9')
+					|| (k == 0 && (current_arg[k] == '-' || current_arg[k] == '+'))))
+					{
+						is_valid_format = 0;
+						break ;
+					}
 			}
-			if (strlen(current_arg) == 1 && (current_arg[0] == '-' || current_arg[0] == '+')) is_valid_format = 0;
+			if (strlen(current_arg) == 1 && (current_arg[0] == '-' || current_arg[0] == '+'))
+				is_valid_format = 0;
 		}
 
-		if (!is_valid_format) {
-			 fprintf(stderr, "Error\n");
-			 free(original_values); free(sorted_values); free(final_ranks);
-			 return 1;
+		if (!is_valid_format)
+		{
+			(free(original_values), fprintf(stderr, "Error\n"));
+			return (free(sorted_values), free(final_ranks), 1);
 		}
 		if ((val == LONG_MAX && strcmp(current_arg, "9223372036854775807") != 0 && strcmp(current_arg, "+9223372036854775807") != 0 ) ||
 			(val == LONG_MIN && strcmp(current_arg, "-9223372036854775808") != 0 ) ||
-			 val > INT_MAX || val < INT_MIN) {
-			fprintf(stderr, "Error\n");
-			free(original_values); free(sorted_values); free(final_ranks);
-			return 1;
+			 val > INT_MAX || val < INT_MIN)
+		{
+			(free(original_values), fprintf(stderr, "Error\n"));
+			return (free(sorted_values), free(final_ranks), 1);
 		}
 		original_values[i] = (int)val;
 	}
@@ -105,11 +113,12 @@ int main(int argc, char *argv[]) {
 	for (int i = 0; i < num_count; i++) sorted_values[i] = original_values[i];
 	ft_heapsort(sorted_values, num_count);
 
-	for (int i = 0; i < num_count - 1; i++) {
-		if (sorted_values[i] == sorted_values[i+1]) {
-			fprintf(stderr, "Error\n");
-			free(original_values); free(sorted_values); free(final_ranks);
-			return 1;
+	for (int i = 0; i < num_count - 1; i++)
+	{
+		if (sorted_values[i] == sorted_values[i+1])
+		{
+			(free(original_values), fprintf(stderr, "Error\n"));
+			return (free(sorted_values), free(final_ranks), 1);
 		}
 	}
 
@@ -127,11 +136,13 @@ int main(int argc, char *argv[]) {
 	t_stack *stack_a = NULL;
 	t_stack *stack_b = NULL;
 
-	for (int i = 0; i < num_count; i++) {
+	for (int i = 0; i < num_count; i++)
+	{
 		t_stack *new_node = create_new_node(final_ranks[i]);
-		if (!new_node) {
-			fprintf(stderr, "Error\n");
-			free_stack(&stack_a); free(final_ranks); return 1;
+		if (!new_node)
+		{
+			(free(original_values), fprintf(stderr, "Error\n"));
+			return (free(sorted_values), free(final_ranks), 1);
 		}
 		add_node_to_stack_bottom(&stack_a, new_node);
 	}
@@ -165,102 +176,161 @@ int main(int argc, char *argv[]) {
 }
 
 // --- Preprocessing Helper Functions ---
-long ft_atol(const char *str) {
+long ft_atol(const char *str)
+{
 	long res = 0;
 	int sign = 1;
 	int i = 0;
 	int d = 0;
 	
-	if (!str || !*str) return LONG_MAX;
+	if (!str || !*str)
+		return (LONG_MAX);
 	
-	while (str[i] && (str[i]==' '||str[i]=='\t'||str[i]=='\n'||str[i]=='\v'||str[i]=='\f'||str[i]=='\r')) i++;
-	
-
-	if (str[i] && (str[i]=='-'||str[i]=='+')) { 
-		if(str[i++]=='-') sign=-1; 
+	while (str[i] && (str[i]==' '||str[i]=='\t'||str[i]=='\n'||str[i]=='\v'||str[i]=='\f'||str[i]=='\r'))
+		i++;
+	if (str[i] && (str[i]=='-'||str[i]=='+'))
+	{ 
+		if (str[i++] == '-')
+			sign = -1;
 	}
-	
-
-	if (!str[i]) return LONG_MAX;
-	
-
-	while (str[i] && (str[i]>='0'&&str[i]<='9')) {
-
-		if (sign==1) { 
-			if (res > (LONG_MAX-(str[i]-'0'))/10) return LONG_MAX; 
-		} else { 
-			if (-res < (LONG_MIN+(str[i]-'0'))/10) return LONG_MIN; 
-			if (-res == (LONG_MIN+(str[i]-'0'))/10 && (str[i]-'0') > -(LONG_MIN%10)) return LONG_MIN; 
+	if (!str[i])
+		return (LONG_MAX);
+	while (str[i] && (str[i]>='0'&& str[i] <='9'))
+	{
+		if (sign == 1)
+		{
+			if (res > (LONG_MAX-(str[i]-'0')) / 10)
+				return (LONG_MAX);
 		}
-		
-		res = res*10 + (str[i++]-'0'); 
+		else
+		{
+			if (-res < (LONG_MIN + (str[i] -'0')) / 10)
+				return (LONG_MIN);
+			if (-res == (LONG_MIN + (str[i] -'0')) / 10 && (str[i]-'0') > -(LONG_MIN % 10))
+				return (LONG_MIN);
+		}
+		res = res * 10 + (str[i++] -'0'); 
 		d++;
 	}
 	
-
-	if (d==0 || str[i]) return LONG_MAX;
-	
-	return res*sign;
+	if (d == 0 || str[i])
+		return (LONG_MAX);
+	return (res * sign);
 }
 
-void swap_ints(int *a, int *b) {
-	int t=*a;
-	*a=*b;
-	*b=t;
+void swap_ints(int *a, int *b)
+{
+	int	t;
+
+	t = *a;
+	*a = *b;
+	*b = t;
 }
 
-void heapify(int *a, int n, int i) {
-	int l=i, L=2*i+1, R=2*i+2;
-	if(L<n&&a[L]>a[l])l=L;
-	if(R<n&&a[R]>a[l])l=R;
-	if(l!=i){swap_ints(&a[i],&a[l]);heapify(a,n,l);}
+void heapify(int *a, int n, int i)
+{
+	int l = i;
+	int L = 2 * i + 1;
+	int R = 2 * i + 2;
+
+	if (L < n && a[L] > a[l])
+		l = L;
+	if (R < n && a[R] > a[l])
+		l = R;
+	if (l != i)
+	{
+		swap_ints(&a[i], &a[l]);
+		heapify(a, n, l);
+	}
 }
 
-void ft_heapsort(int *a, int n) {
-	for(int i=n/2-1;i>=0;i--)heapify(a,n,i);
-	for(int i=n-1;i>0;i--){swap_ints(&a[0],&a[i]);heapify(a,i,0);}
+void ft_heapsort(int *a, int n)
+{
+	for (int i = n/2 - 1; i >= 0; i--)
+		heapify(a, n, i);
+
+	for (int i = n - 1; i > 0; i--)
+	{
+		swap_ints(&a[0], &a[i]);
+		heapify(a, i, 0);
+	}
 }
 
 // --- Stack Helper Functions ---
-t_stack *create_new_node(int value) {
-	t_stack *nn = (t_stack *)malloc(sizeof(t_stack));
-	if(nn){ nn->value=value; nn->next=nn; nn->prev=nn; }
+t_stack *create_new_node(int value)
+{
+	t_stack *nn = malloc(sizeof(t_stack));  // Allocate memory for a new stack node.
+	if (!nn) return NULL;                    // Return NULL if allocation fails.
+
+	nn->value = value;                       // Set the node's value.
+	nn->next = nn;                            // Make next point to itself (for circular list).
+	nn->prev = nn;                            // Make prev point to itself.
+
 	return nn;
 }
 
-void add_node_to_stack_bottom(t_stack **s, t_stack *nn) {
-	if(!s||!nn)return;
-	if(!*s){*s=nn;}else{
-		t_stack*l=(*s)->prev;
-		l->next=nn;
-		nn->prev=l;
-		nn->next=*s;
-		(*s)->prev=nn;
+void add_node_to_stack_bottom(t_stack **s, t_stack *nn)
+{
+	if (!s || !nn) return;  // Exit early if stack pointer or node is NULL.
+	
+	if (!*s)                   // If the stack is empty,
+	{
+		*s = nn;               // Set head to new node (making it circular).
+		return;
 	}
+
+	// Otherwise, add the new node after the tail of the existing stack.
+	t_stack *last_node = (*s)->prev;  // Traverse to the last node before the head.
+	
+	// Link the new node into the stack: insert between previous and next.
+	last_node->next = nn;
+	nn->prev = last_node;
+	nn->next = *s;
+	(*s)->prev = nn;
 }
 
-void print_stack(const char *label, t_stack *stack) {
+void print_stack(const char *label, t_stack *stack)
+{
+	t_stack *current;
+
 	printf("%s ", label);
-	if (stack == NULL) {
+	if (stack == NULL)
+	{
 		printf("(empty)\n");
 		return;
 	}
-	t_stack *current = stack;
-	do {
+	current = stack;
+	printf("%d ", current->value);
+	current = current->next;
+	while (current != stack)
+	{
 		printf("%d ", current->value);
 		current = current->next;
-	} while (current != stack);
+	}
 	printf("\n");
 }
 
-void free_stack(t_stack **s) {
-	if(!s||!*s)return;
-	t_stack*c=*s,*h=*s,*t;
-	do{t=c;c=c->next;free(t);}while(c!=h);
-	*s=NULL;
+void free_stack(t_stack **s)
+{
+	if (!s || !*s) return;  // Exit early if stack pointer or head is NULL.
+
+	t_stack *current = *s;
+	t_stack *head = *s;
+	t_stack *temp;
+
+	temp = current;
+	current = current->next;
+	free(temp);
+	while (current != head)
+	{
+		temp = current;
+		current = current->next;
+		free(temp);
+	}
 }
 
-int get_stack_size(t_stack *stack) {
+int get_stack_size(t_stack *stack)
+{
 	if (!stack) return 0;
 	int size = 0;
 	t_stack *current = stack;
@@ -271,8 +341,10 @@ int get_stack_size(t_stack *stack) {
 	return size;
 }
 
-int get_node_position_by_value(t_stack *stack, int value_to_find) {
-	if (!stack) return -1;
+int get_node_position_by_value(t_stack *stack, int value_to_find)
+{
+	if (!stack)
+		return (-1);
 	int position = 0;
 	t_stack *current = stack;
 	do { 
@@ -285,61 +357,43 @@ int get_node_position_by_value(t_stack *stack, int value_to_find) {
 
 
 // --- Push_Swap Operations (printf calls are the output) ---
-void do_sa(t_stack **a) {
-	if (!a || !*a || (*a)->next == *a) return;
-	t_stack *f = *a, *s = f->next, *t = s->next, *l = f->prev;
-	f->next = t;
-	t->prev = f;
-	s->prev = l;
-	l->next = s;
-	f->prev = s;
-	s->next = f;
-	*a = s;
-	printf("sa\n");
-}
+void do_sx(t_stack **x)
+{
+	t_stack	*f;
+	t_stack	*s;
+	t_stack	*t;
+	t_stack	*l;
 
-void do_sb(t_stack **b) {
-	if (!b || !*b || (*b)->next == *b) return;
-	t_stack *f = *b, *s = f->next, *t = s->next, *l = f->prev;
+	if (!x || !*x || (*x)->next == *x)
+		return ;
+	f = *x;
+	s = f->next;
+	t = s->next;
+	l = f->prev;
 	f->next = t;
 	t->prev = f;
 	s->prev = l;
 	l->next = s;
 	f->prev = s;
 	s->next = f;
-	*b = s;
-	printf("sb\n");
+	*x = s;
 }
 
 void do_ss(t_stack **a, t_stack **b)
 {
-	t_stack *f;
-	t_stack *s;
-	t_stack *t;
-	t_stack	*l;
+	int p_a;
+	int p_b;
 
-	int p_a = 0, p_b = 0;
-	if (a && *a && (*a)->next != *a) {
-		f = *a, s = f->next, t = s->next, l = f->prev;
-		f->next = t;
-		t->prev = f;
-		s->prev = l;
-		l->next = s;
-		f->prev = s;
-		s->next = f;
-		*a = s;
+	p_a = 0;
+	p_b = 0;
+	if (a && *a && (*a)->next != *a)
+	{
+		do_sx(a);
 		p_a = 1;
 	}
 	if (b && *b && (*b)->next != *b)
 	{
-		t_stack *f = *b, *s = f->next, *t = s->next, *l = f->prev;
-		f->next = t;
-		t->prev = f;
-		s->prev = l;
-		l->next = s;
-		f->prev = s;
-		s->next = f;
-		*b = s;
+		do_sx(b);
 		p_b = 1;
 	}
 	if (p_a || p_b)
@@ -494,17 +548,25 @@ void sort_three_elements(t_stack **stack_a)
 	t=top->value;
 	m=mid->value;
 	b=bot->value;
-	if (t>m && m<b && t<b)
-		do_sa(stack_a);
-	else if (t>m && m>b)
-		(free(0), do_sa(stack_a), do_rra(stack_a));
+	if (t > m && m < b && t < b)
+		(free(0), do_sx(stack_a), printf("sa\n"));
+	else if (t > m && m > b)
+		(free(0), do_sx(stack_a), printf("sa\n"), do_rra(stack_a));
 	else if (t>m && m<b && t>b)
 		do_ra(stack_a);
 	else if (t<m && m>b && t<b)
-		(free(0), do_sa(stack_a), do_ra(stack_a));
+		(free(0), do_sx(stack_a), printf("sa\n"),  do_ra(stack_a));
 	else if (t<m && m>b && t>b)
 		do_rra(stack_a);
 }
+// void sort_five_elements(t_stack **stack_a, t_stack **stack_b)
+// {
+// 	int	max;
+// 	int	i;
+
+// 	max = 5;
+// 	while ()
+// }
 
 void calculate_rotation_cost_to_top_by_pos(t_stack *stack, int target_pos, int *moves_needed)
 {
@@ -524,7 +586,8 @@ void calculate_rotation_cost_to_top_by_pos(t_stack *stack, int target_pos, int *
 
 int get_target_pos_in_a(t_stack *stack_a, int value_to_insert)
 {
-	if (!stack_a) return 0;
+	if (!stack_a)
+		return (0);
 
 	t_stack *current = stack_a;
 	int current_pos = 0;
@@ -535,7 +598,8 @@ int get_target_pos_in_a(t_stack *stack_a, int value_to_insert)
 	t_stack *min_node_ptr = current; 
 	int min_node_pos = 0;
 
-	for (int i = 0; i < size_a; ++i) {
+	for (int i = 0; i < size_a; ++i)
+	{
 		if (current->value < min_val_in_a)
 		{
 			min_val_in_a = current->value;
@@ -543,66 +607,87 @@ int get_target_pos_in_a(t_stack *stack_a, int value_to_insert)
 			min_node_pos = i;
 		}
 		if (current->value > max_val_in_a)
-		{
 			max_val_in_a = current->value;
-		}
 		current = current->next;
 	}
-	
-	if (value_to_insert < min_val_in_a || value_to_insert > max_val_in_a) {
 
-		return min_node_pos; 
-	}
+	if (value_to_insert < min_val_in_a || value_to_insert > max_val_in_a)
+		return (min_node_pos); 
 
 	current = stack_a; // Reset scan
 	current_pos = 0;
-	for (int i = 0; i < size_a; ++i) {
-		if (value_to_insert > current->prev->value && value_to_insert < current->value) {
-			return current_pos;
-		}
+	for (int i = 0; i < size_a; ++i)
+	{
+		if (value_to_insert > current->prev->value && value_to_insert < current->value)
+			return (current_pos);
 		current_pos++;
 		current = current->next;
 	}
-
-	return min_node_pos;
+	return (min_node_pos);
 }
 
 
-void execute_cheapest_moves(t_stack **stack_a, t_stack **stack_b, t_move_cost best_move) {
-	int moves_a = best_move.moves_a;
-	int moves_b = best_move.moves_b;
-
-	while (moves_a > 0 && moves_b > 0) { do_rr(stack_a, stack_b); moves_a--; moves_b--; }
-	while (moves_a < 0 && moves_b < 0) { do_rrr(stack_a, stack_b); moves_a++; moves_b++; }
-	while (moves_a > 0) { do_ra(stack_a); moves_a--; }
-	while (moves_a < 0) { do_rra(stack_a); moves_a++; }
-	while (moves_b > 0) { do_rb(stack_b); moves_b--; }
-	while (moves_b < 0) { do_rrb(stack_b); moves_b++; }
+void execute_cheapest_moves(t_stack **stack_a, t_stack **stack_b, t_move_cost best_move)
+{
+	while (best_move.moves_a > 0 && best_move.moves_b > 0)
+	{
+		do_rr(stack_a, stack_b);
+		best_move.moves_a--;
+		best_move.moves_b--;
+	}
+	while (best_move.moves_a < 0 && best_move.moves_b < 0)
+	{
+		do_rrr(stack_a, stack_b);
+		best_move.moves_a++;
+		best_move.moves_b++;
+	}
+	while (best_move.moves_a > 0 && best_move.moves_a--)
+		do_ra(stack_a);
+	while (best_move.moves_a < 0 && best_move.moves_a++)
+		do_rra(stack_a);
+	while (best_move.moves_b > 0 && best_move.moves_b--)
+		do_rb(stack_b);
+	while (best_move.moves_b < 0 && best_move.moves_b++)
+		do_rrb(stack_b);
 	do_pa(stack_a, stack_b);
 }
 
-
-void push_swap_sort_core(t_stack **stack_a, t_stack **stack_b, int num_count) {
-	if (num_count <= 1) return; 
-	if (num_count == 2) { if ((*stack_a)->value > (*stack_a)->next->value) do_sa(stack_a); return; }
-	if (num_count == 3) { sort_three_elements(stack_a); return; }
+void push_swap_sort_core(t_stack **stack_a, t_stack **stack_b, int num_count)
+{
+	if (num_count <= 1)
+		return ;
+	if (num_count == 2)
+	{
+		if ((*stack_a)->value > (*stack_a)->next->value)
+		{
+			do_sx(stack_a);
+			printf("sa\n");
+			return;
+		}
+	}
+	if (num_count == 3)
+	{
+		sort_three_elements(stack_a);
+		return;
+	}
 	// if (num_count == 5) {sort_five_elements}
 	
 	// Phase 1: Push all to B
-	while(*stack_a != NULL) {
+	while(*stack_a != NULL)
+	{
 		do_pb(stack_a, stack_b);
 	}
-
-
-	while (*stack_b != NULL) {
+	while (*stack_b != NULL)
+	{
 		t_move_cost best_overall_move;
-		best_overall_move.total_ops = INT_MAX; 
+		best_overall_move.total_ops = INT_MAX;
 		best_overall_move.node_in_b = NULL;
 
 		t_stack *current_b_node = *stack_b;
-		int b_size = get_stack_size(*stack_b); 
+		int b_size = get_stack_size(*stack_b);
 
-		for (int i = 0; i < b_size; ++i) { 
+		for (int i = 0; i < b_size; ++i)
+		{
 			t_move_cost current_element_cost;
 
 			current_element_cost.target_val_in_b = current_b_node->value;
@@ -611,42 +696,51 @@ void push_swap_sort_core(t_stack **stack_a, t_stack **stack_b, int num_count) {
 			
 			int target_a_idx = get_target_pos_in_a(*stack_a, current_b_node->value);
 			calculate_rotation_cost_to_top_by_pos(*stack_a, target_a_idx, &current_element_cost.moves_a);
-			
-			int ops_a = abs(current_element_cost.moves_a);
-			int ops_b = abs(current_element_cost.moves_b);
-			
-			if ((current_element_cost.moves_a * current_element_cost.moves_b) > 0) { 
-				current_element_cost.total_ops = (ops_a > ops_b ? ops_a : ops_b); 
-			} else {
-				current_element_cost.total_ops = ops_a + ops_b; 
+			// not working!!!
+			if ((current_element_cost.moves_a * current_element_cost.moves_b) > 0)
+			{
+				if (current_element_cost.moves_a > current_element_cost.moves_b)
+					current_element_cost.total_ops = current_element_cost.moves_a;
+				else
+					current_element_cost.total_ops = current_element_cost.moves_b;
 			}
-
-			if (current_element_cost.total_ops < best_overall_move.total_ops) {
+			else
+				current_element_cost.total_ops = current_element_cost.moves_a + current_element_cost.moves_b; 
+			if (current_element_cost.total_ops < best_overall_move.total_ops)
+			{
 				best_overall_move = current_element_cost;
 				best_overall_move.node_in_b = current_b_node;
 			}
 			current_b_node = current_b_node->next; 
 		}
-
-		if (best_overall_move.node_in_b != NULL) { 
+		if (best_overall_move.node_in_b != NULL)
+		{
 
 			int pos_of_best_node_in_b = get_node_position_by_value(*stack_b, best_overall_move.target_val_in_b);
 			calculate_rotation_cost_to_top_by_pos(*stack_b, pos_of_best_node_in_b, &best_overall_move.moves_b);
-			
 			execute_cheapest_moves(stack_a, stack_b, best_overall_move);
-		} else {
+		}
+		else
+		{
 			if (*stack_b) do_pa(stack_a, stack_b);
 			else break;
 		}
 	}
-
-	if (*stack_a != NULL && get_stack_size(*stack_a) == num_count && (*stack_a)->value != 0) {
+	if (*stack_a != NULL && get_stack_size(*stack_a) == num_count && (*stack_a)->value != 0)
+	{
 		int pos_of_zero = get_node_position_by_value(*stack_a, 0);
 		int moves_to_align_a = 0;
-		if (pos_of_zero != -1) { 
+		if (pos_of_zero != -1)
+		{
 			calculate_rotation_cost_to_top_by_pos(*stack_a, pos_of_zero, &moves_to_align_a);
-			while (moves_to_align_a > 0) { do_ra(stack_a); moves_to_align_a--; }
-			while (moves_to_align_a < 0) { do_rra(stack_a); moves_to_align_a++; }
+			while (moves_to_align_a > 0)
+			{
+				do_ra(stack_a); moves_to_align_a--;
+			}
+			while (moves_to_align_a < 0)
+			{
+				do_rra(stack_a); moves_to_align_a++;
+			}
 		}
 	}
 }
